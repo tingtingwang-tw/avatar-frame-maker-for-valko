@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#211916">
+  <meta name="description" content="頭像框小工具">
+  <title>頭像框小工具｜BRING VALKO BACK</title>
+  <link rel="icon" type="image/png" href="assets/site-icon.png?v=20260730-4">
+  <link rel="apple-touch-icon" href="assets/site-icon.png?v=20260730-4">
+  <link rel="stylesheet" href="styles.css?v=20260730-3">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="topbar">
+      <div class="topbar-leading">
+        <div id="brandLabel" class="brand" aria-label="#BRINGVALKOBACK #VALKOISLOVED">
+          <span>#BRINGVALKOBACK</span>
+          <span>#VALKOISLOVED</span>
+        </div>
+        <button id="homeButton" class="home-button" type="button" aria-label="回首頁" title="回首頁" hidden>
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="m4 10 8-6 8 6"></path>
+            <path d="M6.5 9.5V20h11V9.5"></path>
+            <path d="M10 20v-6h4v6"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="lang-switch" role="group" aria-label="Language">
+        <button class="lang-button is-active" type="button" data-lang="zh">中文</button>
+        <button class="lang-button" type="button" data-lang="en">EN</button>
+      </div>
+    </header>
+
+    <section id="uploadScreen" class="screen upload-screen">
+      <div class="hero-quote-row">
+        <div class="wolf-emblem">
+          <img src="assets/howling-wolf-round.png" alt="" aria-hidden="true">
+        </div>
+        <blockquote class="campaign-quote">
+          <p><span data-i18n="campaignBefore">敖尹的加入，也是</span><span class="campaign-game-title" data-i18n="gameTitle">《戀與深空》</span><span data-i18n="campaignAfter">長期內容規劃中的一環。</span></p>
+          <cite><span class="campaign-game-title" data-i18n="gameTitle">《戀與深空》</span><span class="campaign-team" data-i18n="campaignTeam">製作組</span><span data-i18n="campaignDate">，2026.06.28</span></cite>
+        </blockquote>
+      </div>
+      <h1>
+        <span data-i18n="title">頭像框小工具</span>
+      </h1>
+      <p class="intro">
+        <span data-i18n="introLine1">將你的照片套上頭像框，</span>
+        <span data-i18n="introLine2">換上新的大頭貼為敖尹應援吧！</span>
+      </p>
+      <button id="uploadButton" class="primary-button" type="button" data-i18n="start">開始製作</button>
+      <p class="privacy-note">
+        <span class="privacy-dot" aria-hidden="true"></span>
+        <span data-i18n="privacy">照片只在你的裝置上處理，不會上傳。</span>
+      </p>
+    </section>
+
+    <section id="photoScreen" class="screen photo-screen" hidden>
+      <div class="photo-upload-card">
+        <div class="photo-upload-empty">
+          <div class="photo-upload-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <path d="M4 5.5h16v13H4z"></path>
+              <path d="m6.5 16 4.2-4.2 2.8 2.8 1.8-1.8 2.7 3.2"></path>
+              <circle cx="16.5" cy="9" r="1.5"></circle>
+            </svg>
+          </div>
+          <h3 data-i18n="choosePhoto">選擇照片</h3>
+          <p data-i18n="uploadHint">支援 JPG、PNG 與手機相簿照片</p>
+        </div>
+        <input id="photoInput" type="file" accept="image/*" hidden>
+        <div class="photo-upload-actions">
+          <button id="choosePhotoButton" class="primary-button" type="button">選擇照片</button>
+        </div>
+      </div>
+
+      <p class="privacy-note photo-privacy">
+        <span class="privacy-dot" aria-hidden="true"></span>
+        <span data-i18n="privacy">照片只在你的裝置上處理，不會上傳。</span>
+      </p>
+    </section>
+
+    <section id="editorScreen" class="screen editor-screen" hidden>
+      <div class="preview-card">
+        <div id="canvasWrap" class="canvas-wrap">
+          <canvas id="previewCanvas" width="2048" height="2048" aria-label="Avatar preview"></canvas>
+          <span id="gestureHint" class="gesture-hint" data-i18n="dragHint">拖曳移動 · 雙指縮放</span>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="zoom-row">
+          <span class="zoom-label" data-i18n="zoom">縮放</span>
+          <input id="zoomSlider" type="range" min="1" max="3" step="0.01" value="1" aria-label="Zoom">
+          <span id="zoomValue" class="zoom-value">100%</span>
+        </div>
+      </div>
+
+      <div class="frame-panel">
+        <h3 class="frame-panel-title" data-i18n="frameTitle">選擇頭像框</h3>
+        <div class="frame-meta">
+          <span id="frameName" class="frame-name">基礎 · #BRINGVALKOBACK</span>
+          <span id="frameIndex" class="frame-index">1 / 6</span>
+        </div>
+        <div id="frameList" class="frame-list" aria-label="Avatar frames"></div>
+        <div class="mode-actions">
+          <button id="saveButton" class="primary-button" type="button" data-i18n="save">儲存圖片</button>
+          <button id="restartButton" class="restart-button" type="button" data-i18n="restart">重新製作</button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="footer-lines">
+        <div>
+          <span data-i18n="createdBy">本網站由</span>
+          <a href="https://www.threads.com/@tingtingwang_tw" target="_blank" rel="noopener noreferrer">Ting Ting Wang</a>
+          <span data-i18n="createdSuffix">創建</span>
+          <span aria-hidden="true"> · </span>
+          <span data-i18n="aiCredit">頭像框圖案由 Codex 生成</span>
+        </div>
+        <div class="footer-disclaimer" data-i18n="disclaimer">此為玩家自製之應援工具，與《戀與深空》官方無直接關聯</div>
+      </div>
+    </footer>
+  </main>
+
+  <div id="exportSheet" class="sheet-backdrop" role="dialog" aria-modal="true" aria-labelledby="exportTitle" hidden>
+    <div class="sheet">
+      <div class="sheet-handle" aria-hidden="true"></div>
+      <h3 id="exportTitle" data-i18n="exportTitle">選擇圖片尺寸</h3>
+      <p class="sheet-copy" data-i18n="exportCopy">PNG 格式，適合保存與分享。</p>
+      <div class="size-options">
+        <button class="size-button" type="button" data-export-size="2048">
+          <span>
+            <strong>2048 × 2048</strong>
+            <small data-i18n="highQuality">高畫質</small>
+          </span>
+          <span>PNG</span>
+        </button>
+        <button class="size-button" type="button" data-export-size="1080">
+          <span>
+            <strong>1080 × 1080</strong>
+            <small data-i18n="smallFile">較小檔案</small>
+          </span>
+          <span>PNG</span>
+        </button>
+      </div>
+      <button id="closeSheetButton" class="ghost-button sheet-close" type="button" data-i18n="cancel">取消</button>
+    </div>
+  </div>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <div id="successOverlay" class="success-overlay" role="status" aria-live="polite" hidden>
+    <div class="success-card">
+      <span class="success-check" aria-hidden="true"></span>
+      <strong data-i18n="saveSuccess">保存成功</strong>
+    </div>
+  </div>
+
+  <script src="app.js?v=20260730-3"></script>
+</body>
+</html>
