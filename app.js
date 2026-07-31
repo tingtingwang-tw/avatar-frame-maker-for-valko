@@ -42,6 +42,7 @@
       cancel: "取消",
       preparing: "正在準備圖片…",
       saved: "圖片已準備完成",
+      downloadStarted: "已開始下載，請查看瀏覽器的下載項目。",
       invalidImage: "無法讀取這張圖片，請換一張試試。",
       frameLoading: "頭像框載入中，請稍候。"
     },
@@ -85,6 +86,7 @@
       cancel: "Cancel",
       preparing: "Preparing your image…",
       saved: "Your image is ready",
+      downloadStarted: "Download started. Check your browser's downloads.",
       invalidImage: "This image could not be opened. Please try another.",
       frameLoading: "The frame is still loading. Please wait."
     }
@@ -622,18 +624,66 @@
     elements.exportSheet.hidden = true;
   }
 
+  function isMobileDevice() {
+    const userAgent = navigator.userAgent;
+    const mobileClientHint = navigator.userAgentData?.mobile === true;
+    const mobileUserAgent = /Android|iPhone|iPad|iPod|Mobile/i.test(userAgent);
+    const touchEnabledIPad = /Macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
+    return mobileClientHint || mobileUserAgent || touchEnabledIPad;
+  }
+
+  function downloadBlob(blob, filename) {
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = filename;
+    document.body.append(anchor);
+    anchor.click();
+    anchor.remove();
+    window.setTimeout(() => URL.revokeObjectURL(url), 2000);
+  }
+
   async function exportImage(size) {
+    const filename = `bringvalkoback-avatar-${frames[state.frameIndex].id}.png`;
+    const mobileDevice = isMobileDevice();
+    let fileHandle = null;
+
+    if (!mobileDevice && typeof window.showSaveFilePicker === "function") {
+      try {
+        fileHandle = await window.showSaveFilePicker({
+          suggestedName: filename,
+          types: [{
+            description: "PNG image",
+            accept: { "image/png": [".png"] }
+          }]
+        });
+      } catch (error) {
+        if (error.name === "AbortError") return;
+        console.warn("Unable to open the Save As dialog; using a browser download instead.", error);
+      }
+    }
+
+    closeExportSheet();
     showToast(text("preparing"));
     const outputCanvas = document.createElement("canvas");
     renderToCanvas(outputCanvas, size);
     const blob = await new Promise((resolve) => outputCanvas.toBlob(resolve, "image/png"));
     if (!blob) return;
 
-    const filename = `bringvalkoback-avatar-${frames[state.frameIndex].id}.png`;
-    const file = new File([blob], filename, { type: "image/png" });
+    if (fileHandle) {
+      try {
+        const writable = await fileHandle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        showSuccess();
+        return;
+      } catch (error) {
+        console.warn("Unable to write the selected file; using a browser download instead.", error);
+      }
+    }
 
-    closeExportSheet();
-    if (navigator.canShare?.({ files: [file] })) {
+    const file = new File([blob], filename, { type: "image/png" });
+    if (mobileDevice && navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({ files: [file], title: "#BRINGVALKOBACK" });
         showSuccess();
@@ -643,15 +693,8 @@
       }
     }
 
-    const url = URL.createObjectURL(blob);
-    const anchor = document.createElement("a");
-    anchor.href = url;
-    anchor.download = filename;
-    document.body.append(anchor);
-    anchor.click();
-    anchor.remove();
-    window.setTimeout(() => URL.revokeObjectURL(url), 2000);
-    showSuccess();
+    downloadBlob(blob, filename);
+    showToast(text("downloadStarted"));
   }
 
   document.querySelectorAll("[data-lang]").forEach((button) => {
