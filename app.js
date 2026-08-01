@@ -98,7 +98,7 @@
       id: "basic-bringvalkoback",
       nameKey: "frameBasicBring",
       type: "image",
-      src: "assets/frame-basic-bringvalkoback.png",
+      src: "assets/frame-basic-bringvalkoback.png?v=20260801-3",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -107,7 +107,7 @@
       id: "basic-valkoisloved",
       nameKey: "frameBasicLoved",
       type: "image",
-      src: "assets/frame-basic-valkoisloved.png",
+      src: "assets/frame-basic-valkoisloved.png?v=20260801-3",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -116,7 +116,7 @@
       id: "wolf-howl-bringvalkoback",
       nameKey: "frameWolfBring",
       type: "image",
-      src: "assets/frame-wolf-howl-bringvalkoback.png",
+      src: "assets/frame-wolf-howl-bringvalkoback.png?v=20260801-3",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -125,7 +125,7 @@
       id: "wolf-howl-valkoisloved",
       nameKey: "frameWolfLoved",
       type: "image",
-      src: "assets/frame-wolf-howl-valkoisloved.png",
+      src: "assets/frame-wolf-howl-valkoisloved.png?v=20260801-3",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -134,7 +134,7 @@
       id: "lily-bringvalkoback",
       nameKey: "frameLilyBring",
       type: "image",
-      src: "assets/frame-lily-bringvalkoback.png",
+      src: "assets/frame-lily-bringvalkoback.png?v=20260801-3",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -143,7 +143,7 @@
       id: "lily-valkoisloved",
       nameKey: "frameLilyLoved",
       type: "image",
-      src: "assets/frame-lily-valkoisloved.png",
+      src: "assets/frame-lily-valkoisloved.png?v=20260801-3",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
