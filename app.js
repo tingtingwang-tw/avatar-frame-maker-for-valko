@@ -93,6 +93,9 @@
   };
 
   const OUTPUT_SIZE = 2048;
+  const MIN_ZOOM = 0.2;
+  const MAX_ZOOM = 3;
+  const CANVAS_MINT = "#4f918d";
   const frames = [
     {
       id: "basic-bringvalkoback",
@@ -116,7 +119,7 @@
       id: "wolf-howl-bringvalkoback",
       nameKey: "frameWolfBring",
       type: "image",
-      src: "assets/frame-wolf-howl-bringvalkoback.png?v=20260801-3",
+      src: "assets/frame-wolf-howl-bringvalkoback.png?v=20260804-1",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -125,7 +128,7 @@
       id: "wolf-howl-valkoisloved",
       nameKey: "frameWolfLoved",
       type: "image",
-      src: "assets/frame-wolf-howl-valkoisloved.png?v=20260801-3",
+      src: "assets/frame-wolf-howl-valkoisloved.png?v=20260804-1",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -134,7 +137,7 @@
       id: "lily-bringvalkoback",
       nameKey: "frameLilyBring",
       type: "image",
-      src: "assets/frame-lily-bringvalkoback.png?v=20260801-3",
+      src: "assets/frame-lily-bringvalkoback.png?v=20260804-1",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -143,7 +146,7 @@
       id: "lily-valkoisloved",
       nameKey: "frameLilyLoved",
       type: "image",
-      src: "assets/frame-lily-valkoisloved.png?v=20260801-3",
+      src: "assets/frame-lily-valkoisloved.png?v=20260804-1",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -350,8 +353,8 @@
   function clampPan() {
     const metrics = getImageMetrics();
     if (!metrics) return;
-    const maxX = Math.max(0, (metrics.width - OUTPUT_SIZE) / 2);
-    const maxY = Math.max(0, (metrics.height - OUTPUT_SIZE) / 2);
+    const maxX = Math.abs(metrics.width - OUTPUT_SIZE) / 2;
+    const maxY = Math.abs(metrics.height - OUTPUT_SIZE) / 2;
     state.panX = Math.max(-maxX, Math.min(maxX, state.panX));
     state.panY = Math.max(-maxY, Math.min(maxY, state.panY));
   }
@@ -361,7 +364,7 @@
     canvas.height = size;
     const context = canvas.getContext("2d", { alpha: false });
     context.clearRect(0, 0, size, size);
-    context.fillStyle = "#342722";
+    context.fillStyle = CANVAS_MINT;
     context.fillRect(0, 0, size, size);
 
     if (state.photo) {
@@ -587,7 +590,10 @@
       renderPreview();
     } else if (points.length === 2 && state.pinchStart) {
       const distance = pointerDistance(points);
-      state.zoom = Math.max(1, Math.min(3, state.pinchStart.zoom * distance / state.pinchStart.distance));
+      state.zoom = Math.max(
+        MIN_ZOOM,
+        Math.min(MAX_ZOOM, state.pinchStart.zoom * distance / state.pinchStart.distance)
+      );
       elements.zoomSlider.value = String(state.zoom);
       elements.zoomValue.textContent = `${Math.round(state.zoom * 100)}%`;
       clampPan();
