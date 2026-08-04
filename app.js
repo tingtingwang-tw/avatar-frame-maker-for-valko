@@ -359,7 +359,8 @@
     state.panY = Math.max(-maxY, Math.min(maxY, state.panY));
   }
 
-  function renderToCanvas(canvas, size) {
+  function renderToCanvas(canvas, size, options = {}) {
+    const { clipPhotoToCircle = false } = options;
     canvas.width = size;
     canvas.height = size;
     const context = canvas.getContext("2d", { alpha: false });
@@ -369,6 +370,12 @@
 
     if (state.photo) {
       const metrics = getImageMetrics(size);
+      context.save();
+      if (clipPhotoToCircle) {
+        context.beginPath();
+        context.arc(size / 2, size / 2, size / 2, 0, Math.PI * 2);
+        context.clip();
+      }
       context.imageSmoothingEnabled = true;
       context.imageSmoothingQuality = "high";
       context.drawImage(
@@ -378,16 +385,18 @@
         metrics.width,
         metrics.height
       );
+      context.restore();
     }
 
     const frame = frames[state.frameIndex];
     if (frame.type === "image" && frame.image) {
       drawFittedFrame(context, frame, size);
     }
+
   }
 
   function renderPreview() {
-    renderToCanvas(elements.canvas, OUTPUT_SIZE);
+    renderToCanvas(elements.canvas, OUTPUT_SIZE, { clipPhotoToCircle: true });
   }
 
   function resetTransform() {
@@ -672,7 +681,7 @@
     closeExportSheet();
     showToast(text("preparing"));
     const outputCanvas = document.createElement("canvas");
-    renderToCanvas(outputCanvas, size);
+    renderToCanvas(outputCanvas, size, { clipPhotoToCircle: true });
     const blob = await new Promise((resolve) => outputCanvas.toBlob(resolve, "image/png"));
     if (!blob) return;
 
