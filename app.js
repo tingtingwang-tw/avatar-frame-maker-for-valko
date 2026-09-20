@@ -37,8 +37,6 @@
       frameLilyBring: "鈴蘭 · #BRINGVALKOBACK",
       frameLilyLoved: "鈴蘭 · #VALKOISLOVED",
       exportTitle: "選擇圖片尺寸",
-      exportCopy: "PNG 格式，適合保存與分享。",
-      blankExportCopy: "深薄荷綠留白底圖，PNG 格式。",
       highQuality: "高畫質",
       smallFile: "較小檔案",
       cancel: "取消",
@@ -83,8 +81,6 @@
       frameLilyBring: "Lily of the Valley · #BRINGVALKOBACK",
       frameLilyLoved: "Lily of the Valley · #VALKOISLOVED",
       exportTitle: "Choose image size",
-      exportCopy: "Saved as PNG, ready to share.",
-      blankExportCopy: "A blank image with a deep mint background, saved as PNG.",
       highQuality: "High quality",
       smallFile: "Smaller file",
       cancel: "Cancel",
@@ -202,7 +198,6 @@
     frameName: document.querySelector("#frameName"),
     frameIndex: document.querySelector("#frameIndex"),
     exportSheet: document.querySelector("#exportSheet"),
-    exportCopy: document.querySelector("#exportCopy"),
     closeSheetButton: document.querySelector("#closeSheetButton"),
     homeFrameStack: document.querySelector("#homeFrameStack"),
     homeStackFront: document.querySelector("#homeStackFront"),
@@ -220,12 +215,6 @@
 
   function text(key) {
     return COPY[state.language][key];
-  }
-
-  function updateExportCopy() {
-    elements.exportCopy.textContent = state.exportMode === "blank"
-      ? text("blankExportCopy")
-      : text("exportCopy");
   }
 
   function shuffledFrameIndexes() {
@@ -308,7 +297,6 @@
     elements.homeButton.setAttribute("title", text("home"));
     updateFrameMeta();
     renderFrameOptions();
-    updateExportCopy();
   }
 
   function showToast(message) {
@@ -753,7 +741,6 @@
       return;
     }
     state.exportMode = mode;
-    updateExportCopy();
     elements.exportSheet.hidden = false;
   }
 
