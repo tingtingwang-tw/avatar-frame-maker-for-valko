@@ -289,8 +289,8 @@
     localStorage.setItem("bringvalkoback-language", language);
     document.documentElement.lang = language === "zh" ? "zh-Hant" : "en";
     document.title = language === "zh"
-      ? "敖尹應援頭像框"
-      : "Valko Support Avatar Frames";
+      ? "敖尹應援頭像框小工具"
+      : "Valko Support Avatar Frame Maker";
 
     document.querySelectorAll("[data-i18n]").forEach((node) => {
       node.textContent = text(node.dataset.i18n);
