@@ -5,6 +5,7 @@
   --mint: #c7f4df;
   --mint-strong: #58cfa3;
   --mint-deep: #277f64;
+  --mint-canvas-muted: #3b6b68;
   --cream: #fff7e9;
   --cream-muted: #d8cbbd;
   --cocoa: #74584b;
@@ -89,8 +90,9 @@ input:focus-visible {
 }
 
 .brand {
-  display: grid;
-  gap: 3px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
   min-width: 0;
   font-family: ui-rounded, "Avenir Next Rounded", "Avenir Next", sans-serif;
   font-size: 11px;
@@ -98,6 +100,19 @@ input:focus-visible {
   line-height: 1;
   letter-spacing: .025em;
   color: var(--mint);
+}
+
+.brand-icon {
+  flex: 0 0 auto;
+  width: 25px;
+  height: 25px;
+  border-radius: 7px;
+  object-fit: cover;
+}
+
+.brand-lines {
+  display: grid;
+  gap: 3px;
 }
 
 .home-button {
@@ -171,64 +186,116 @@ input:focus-visible {
   padding-bottom: max(34px, env(safe-area-inset-bottom));
 }
 
-.hero-quote-row {
-  display: flex;
+.home-showcase-row {
+  display: grid;
+  grid-template-columns: clamp(132px, 34vw, 154px) minmax(0, 1fr);
   align-items: center;
-  gap: 15px;
+  gap: 20px;
   width: 100%;
-  margin-bottom: 22px;
+  margin: 20px 0 30px;
 }
 
-.wolf-emblem {
+.home-poster-visual {
   position: relative;
-  flex: 0 0 98px;
-  width: 98px;
-  height: 98px;
-  margin-left: -4px;
-  overflow: hidden;
-  border-radius: 50%;
-  filter: drop-shadow(0 18px 26px rgba(0, 0, 0, .2));
+  width: 100%;
+  height: clamp(150px, 39vw, 174px);
 }
 
-.wolf-emblem img {
+.home-frame-stack {
+  position: absolute;
+  top: 50%;
+  left: calc(50% - 4px);
+  width: min(100%, 154px);
+  aspect-ratio: 1;
+  pointer-events: none;
+  transform: translate(-50%, -50%);
+}
+
+.home-stack-card {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border: 1px solid rgba(199, 244, 223, .18);
+  border-radius: 27px;
+  background: var(--mint-canvas-muted);
+  box-shadow: 0 14px 34px rgba(10, 5, 3, .3);
+  transform-origin: center;
+}
+
+.home-stack-card img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: contain;
 }
 
+.home-stack-back {
+  opacity: .42;
+  transform: translate(13px, -13px) rotate(6deg) scale(.9);
+}
+
+.home-stack-middle {
+  opacity: .72;
+  transform: translate(7px, -7px) rotate(3deg) scale(.95);
+}
+
+.home-stack-front {
+  transform: rotate(-1deg);
+}
+
+.home-frame-stack.is-cycling .home-stack-front {
+  animation: home-front-out 520ms var(--ease) both;
+}
+
+.home-frame-stack.is-cycling .home-stack-middle {
+  animation: home-middle-forward 520ms var(--ease) both;
+}
+
+.home-frame-stack.is-cycling .home-stack-back {
+  animation: home-back-forward 520ms var(--ease) both;
+}
+
+.home-poster-copy {
+  position: relative;
+  z-index: 2;
+  min-width: 0;
+  margin-bottom: 28px;
+  text-align: left;
+}
+
 .campaign-quote {
   position: relative;
   min-width: 0;
   margin: 0;
-  padding-top: 14px;
+  padding: 20px 0 8px 31px;
+  text-align: left;
 }
 
 .campaign-quote::before {
   content: "“";
   position: absolute;
-  top: -12px;
-  left: -2px;
+  top: -9px;
+  left: 0;
   color: rgba(88, 207, 163, .42);
   font-family: Georgia, serif;
-  font-size: 42px;
+  font-size: 47px;
   line-height: 1;
 }
 
 .campaign-quote p {
   margin: 0;
   color: var(--cream-muted);
-  font-size: 13.5px;
+  font-size: 14px;
   font-weight: 650;
-  line-height: 1.52;
+  line-height: 1.62;
   text-wrap: pretty;
 }
 
 .campaign-quote cite {
   display: block;
-  margin-top: 7px;
+  margin-top: 9px;
   color: var(--mint-strong);
-  font-size: 11.5px;
+  font-size: 12px;
   font-style: normal;
   font-weight: 750;
   line-height: 1.4;
@@ -246,52 +313,98 @@ html[lang="en"] .campaign-team {
 }
 
 h1 {
-  max-width: 390px;
+  max-width: none;
   margin: 0;
   color: var(--cream);
   font-family: ui-rounded, "Avenir Next Rounded", "Avenir Next", sans-serif;
-  font-size: clamp(34px, 10vw, 48px);
-  line-height: .98;
+  font-size: clamp(34px, 9vw, 44px);
+  line-height: 1.01;
   letter-spacing: -.045em;
   text-wrap: balance;
+  white-space: nowrap;
 }
 
-h1 > [data-i18n="title"] {
-  display: flex;
-  align-items: flex-end;
-  height: 52px;
-  overflow: hidden;
+h1 > span {
+  display: inline;
 }
 
 .intro {
   width: 100%;
-  max-width: none;
-  height: 3.3em;
-  margin: 10px 0 30px;
-  overflow: hidden;
+  max-width: 360px;
+  margin: 12px 0 0;
   color: var(--cream-muted);
-  font-size: clamp(15px, 4.3vw, 16px);
-  line-height: 1.65;
+  font-size: clamp(13px, 3.5vw, 15px);
+  line-height: 1.55;
 }
 
 .intro span {
   display: block;
-  white-space: nowrap;
 }
 
 html[lang="en"] h1 {
-  font-size: clamp(29px, 9vw, 42px);
+  max-width: none;
+  margin: 0;
+  font-size: clamp(30px, 8vw, 38px);
+  line-height: 1.04;
+  white-space: normal;
+}
+
+html[lang="en"] h1 > span {
+  display: block;
+}
+
+html[lang="en"] .intro {
+  max-width: 390px;
+  font-size: clamp(12.5px, 3.2vw, 14px);
+  text-wrap: pretty;
+}
+
+html[lang="en"] .intro span {
+  display: inline;
+}
+
+html[lang="en"] .campaign-quote {
+  padding-right: 2px;
+}
+
+@keyframes home-front-out {
+  0% { opacity: 1; transform: rotate(-1deg); }
+  60% { opacity: 0; transform: translate(-22px, 13px) rotate(-9deg) scale(.92); }
+  100% { opacity: 0; transform: translate(-28px, 17px) rotate(-11deg) scale(.88); }
+}
+
+@keyframes home-middle-forward {
+  from { opacity: .72; transform: translate(7px, -7px) rotate(3deg) scale(.95); }
+  to { opacity: 1; transform: rotate(-1deg); }
+}
+
+@keyframes home-back-forward {
+  from { opacity: .42; transform: translate(13px, -13px) rotate(6deg) scale(.9); }
+  to { opacity: .72; transform: translate(7px, -7px) rotate(3deg) scale(.95); }
 }
 
 @media (max-width: 360px) {
-  .hero-quote-row {
+  .home-showcase-row {
+    grid-template-columns: 122px minmax(0, 1fr);
     gap: 14px;
+    margin: 14px 0 24px;
   }
 
-  .wolf-emblem {
-    flex-basis: 86px;
-    width: 86px;
-    height: 86px;
+  .home-poster-visual {
+    height: 142px;
+  }
+
+  h1 {
+    font-size: 34px;
+  }
+
+  html[lang="en"] h1 {
+    font-size: 29px;
+  }
+
+  .intro,
+  html[lang="en"] .intro {
+    font-size: 11px;
   }
 
   .campaign-quote p {
@@ -348,12 +461,16 @@ html[lang="en"] h1 {
   background: transparent;
 }
 
+.upload-screen > .primary-button {
+  min-height: 58px;
+}
+
 .privacy-note {
   display: flex;
   align-items: flex-start;
   gap: 10px;
   min-height: 3em;
-  margin: 18px 4px 0;
+  margin: 24px 4px 0;
   color: #aa9b8f;
   font-size: 12px;
   line-height: 1.5;
@@ -367,90 +484,6 @@ html[lang="en"] h1 {
   border-radius: 50%;
   background: var(--mint-strong);
   box-shadow: 0 0 0 4px rgba(88, 207, 163, .11);
-}
-
-.photo-screen {
-  padding-top: 4px;
-}
-
-.photo-upload-card {
-  display: grid;
-  justify-items: center;
-  margin-top: 14px;
-  padding: 34px 22px 24px;
-  border: 1px solid rgba(199, 244, 223, .13);
-  border-radius: var(--radius-lg);
-  background:
-    radial-gradient(circle at 50% 8%, rgba(199, 244, 223, .09), transparent 40%),
-    linear-gradient(145deg, rgba(255, 255, 255, .055), rgba(255, 255, 255, .015));
-  box-shadow: var(--shadow-sm);
-  text-align: center;
-}
-
-.photo-upload-empty {
-  display: grid;
-  justify-items: center;
-  width: 100%;
-}
-
-.photo-upload-icon {
-  display: grid;
-  width: 92px;
-  height: 92px;
-  margin-bottom: 22px;
-  place-items: center;
-  border: 1px solid rgba(199, 244, 223, .18);
-  border-radius: 26px;
-  color: var(--mint);
-  background: var(--chocolate);
-  box-shadow: 0 14px 28px rgba(10, 5, 3, .2);
-}
-
-.photo-upload-icon svg {
-  width: 42px;
-  height: 42px;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.6;
-  stroke-linecap: round;
-  stroke-linejoin: round;
-}
-
-.photo-upload-card h3 {
-  height: 1.35em;
-  margin: 0;
-  color: var(--cream);
-  font-family: ui-rounded, "Avenir Next Rounded", "Avenir Next", sans-serif;
-  font-size: 24px;
-  line-height: 1.2;
-}
-
-.photo-upload-card p {
-  height: 3.1em;
-  max-width: 270px;
-  margin: 10px 0 22px;
-  color: var(--cream-muted);
-  font-size: 13px;
-  line-height: 1.55;
-}
-
-.photo-upload-actions {
-  display: grid;
-  width: 100%;
-  gap: 8px;
-}
-
-.photo-upload-actions .primary-button {
-  min-height: 52px;
-}
-
-.photo-upload-actions button[disabled] {
-  opacity: .5;
-  cursor: wait;
-}
-
-.photo-privacy {
-  margin-top: 18px;
 }
 
 .editor-screen {
@@ -491,6 +524,66 @@ html[lang="en"] h1 {
   height: 100%;
 }
 
+.canvas-wrap::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: rgba(12, 8, 7, .56);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 220ms var(--ease);
+}
+
+.canvas-wrap.is-empty::after {
+  opacity: 0;
+}
+
+.canvas-upload-button {
+  position: absolute;
+  z-index: 2;
+  top: 50%;
+  left: 50%;
+  min-width: 126px;
+  min-height: 44px;
+  padding: 0 18px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 247, 233, .82);
+  color: var(--espresso);
+  background: rgba(255, 247, 233, .97);
+  box-shadow:
+    0 8px 22px rgba(10, 5, 3, .24),
+    inset 0 1px rgba(255, 255, 255, .72);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transform: translate(-50%, -50%);
+  transition: transform 180ms var(--ease), opacity 180ms var(--ease), background 180ms var(--ease);
+}
+
+.canvas-upload-button:active {
+  transform: translate(-50%, calc(-50% + 2px)) scale(.99);
+}
+
+.canvas-upload-button[disabled] {
+  opacity: .62;
+  cursor: wait;
+}
+
+.canvas-wrap.is-empty {
+  cursor: default;
+}
+
+.controls.is-collapsed {
+  max-height: 0;
+  margin-top: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-8px) scale(.98);
+}
+
 .gesture-hint {
   position: absolute;
   left: 50%;
@@ -513,11 +606,23 @@ html[lang="en"] h1 {
 }
 
 .controls {
+  max-height: 100px;
   margin-top: 16px;
   padding: 18px;
+  overflow: hidden;
   border-radius: var(--radius-md);
   background: var(--chocolate);
   box-shadow: inset 0 1px rgba(255,255,255,.04);
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  transform-origin: top center;
+  transition:
+    max-height 320ms var(--ease),
+    margin-top 320ms var(--ease),
+    padding-top 320ms var(--ease),
+    padding-bottom 320ms var(--ease),
+    opacity 200ms var(--ease),
+    transform 320ms var(--ease);
 }
 
 .zoom-row {
@@ -560,13 +665,23 @@ input[type="range"] {
 input[type="range"]::-webkit-slider-runnable-track {
   height: 5px;
   border-radius: 999px;
-  background: var(--mint-strong);
+  background: linear-gradient(
+    to right,
+    var(--mint-strong) 0 28.2%,
+    var(--cream) 28.2% 28.95%,
+    var(--mint-strong) 28.95% 100%
+  );
 }
 
 input[type="range"]::-moz-range-track {
   height: 5px;
   border-radius: 999px;
-  background: var(--mint-strong);
+  background: linear-gradient(
+    to right,
+    var(--mint-strong) 0 28.2%,
+    var(--cream) 28.2% 28.95%,
+    var(--mint-strong) 28.95% 100%
+  );
 }
 
 input[type="range"]::-webkit-slider-thumb {
@@ -659,6 +774,34 @@ input[type="range"]::-webkit-slider-thumb {
   object-fit: contain;
   border-radius: 13px;
   background: #241b18;
+}
+
+.blank-save-button {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 6px;
+  width: max-content;
+  max-width: 100%;
+  margin: -2px 2px 7px auto;
+  padding: 7px 4px;
+  color: #9f9186;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1.4;
+  text-align: right;
+  cursor: pointer;
+}
+
+.blank-save-button [aria-hidden="true"] {
+  color: var(--mint-strong);
+  font-size: 14px;
+  transition: transform 180ms var(--ease);
+}
+
+.blank-save-button:active [aria-hidden="true"] {
+  transform: translateX(3px);
 }
 
 .mode-actions {

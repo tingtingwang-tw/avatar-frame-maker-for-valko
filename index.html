@@ -4,19 +4,22 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#211916">
-  <meta name="description" content="頭像框小工具">
-  <title>頭像框小工具｜BRING VALKO BACK</title>
+  <meta name="description" content="敖尹應援頭像框">
+  <title>敖尹應援頭像框</title>
   <link rel="icon" type="image/png" href="assets/site-icon.png?v=20260730-4">
   <link rel="apple-touch-icon" href="assets/site-icon.png?v=20260730-4">
-  <link rel="stylesheet" href="styles.css?v=20260804-3">
+  <link rel="stylesheet" href="styles.css?v=20260920-10">
 </head>
 <body>
   <main class="app-shell">
     <header class="topbar">
       <div class="topbar-leading">
         <div id="brandLabel" class="brand" aria-label="#BRINGVALKOBACK #VALKOISLOVED">
-          <span>#BRINGVALKOBACK</span>
-          <span>#VALKOISLOVED</span>
+          <img class="brand-icon" src="assets/site-icon.png?v=20260730-4" alt="" aria-hidden="true">
+          <span class="brand-lines">
+            <span>#BRINGVALKOBACK</span>
+            <span>#VALKOISLOVED</span>
+          </span>
         </div>
         <button id="homeButton" class="home-button" type="button" aria-label="回首頁" title="回首頁" hidden>
           <svg viewBox="0 0 24 24" aria-hidden="true">
@@ -33,66 +36,55 @@
     </header>
 
     <section id="uploadScreen" class="screen upload-screen">
-      <div class="hero-quote-row">
-        <div class="wolf-emblem">
-          <img src="assets/howling-wolf-round.png" alt="" aria-hidden="true">
+      <div class="home-showcase-row">
+        <div class="home-poster-visual" aria-hidden="true">
+          <div id="homeFrameStack" class="home-frame-stack">
+            <div class="home-stack-card home-stack-back">
+              <img id="homeStackBack" src="assets/frame-wolf-howl-valkoisloved.png?v=20260804-1" alt="">
+            </div>
+            <div class="home-stack-card home-stack-middle">
+              <img id="homeStackMiddle" src="assets/frame-lily-bringvalkoback.png?v=20260920-2" alt="">
+            </div>
+            <div class="home-stack-card home-stack-front">
+              <img id="homeStackFront" src="assets/frame-basic-bringvalkoback.png?v=20260801-3" alt="">
+            </div>
+          </div>
         </div>
         <blockquote class="campaign-quote">
           <p><span data-i18n="campaignBefore">敖尹的加入，也是</span><span class="campaign-game-title" data-i18n="gameTitle">《戀與深空》</span><span data-i18n="campaignAfter">長期內容規劃中的一環。</span></p>
           <cite><span class="campaign-game-title" data-i18n="gameTitle">《戀與深空》</span><span class="campaign-team" data-i18n="campaignTeam">製作組</span><span data-i18n="campaignDate">，2026.06.28</span></cite>
         </blockquote>
       </div>
-      <h1>
-        <span data-i18n="title">頭像框小工具</span>
-      </h1>
-      <p class="intro">
-        <span data-i18n="introLine1">將你的照片套上頭像框，</span>
-        <span data-i18n="introLine2">換上新的大頭貼為敖尹應援吧！</span>
-      </p>
+      <div class="home-poster-copy">
+        <h1>
+          <span data-i18n="titleLine1">敖尹應援</span><span data-i18n="titleLine2">頭像框</span>
+        </h1>
+        <p class="intro">
+          <span data-i18n="introLine1">加上頭像框，用專屬於你的頭貼</span>
+          <span data-i18n="introLine2">為敖尹應援吧！</span>
+        </p>
+      </div>
       <button id="uploadButton" class="primary-button" type="button" data-i18n="start">開始製作</button>
       <p class="privacy-note">
         <span class="privacy-dot" aria-hidden="true"></span>
-        <span data-i18n="privacy">照片只在你的裝置上處理，不會上傳。</span>
-      </p>
-    </section>
-
-    <section id="photoScreen" class="screen photo-screen" hidden>
-      <div class="photo-upload-card">
-        <div class="photo-upload-empty">
-          <div class="photo-upload-icon" aria-hidden="true">
-            <svg viewBox="0 0 24 24">
-              <path d="M4 5.5h16v13H4z"></path>
-              <path d="m6.5 16 4.2-4.2 2.8 2.8 1.8-1.8 2.7 3.2"></path>
-              <circle cx="16.5" cy="9" r="1.5"></circle>
-            </svg>
-          </div>
-          <h3 data-i18n="choosePhoto">選擇照片</h3>
-          <p data-i18n="uploadHint">支援 JPG、PNG 與手機相簿照片</p>
-        </div>
-        <input id="photoInput" type="file" accept="image/*" hidden>
-        <div class="photo-upload-actions">
-          <button id="choosePhotoButton" class="primary-button" type="button">選擇照片</button>
-        </div>
-      </div>
-
-      <p class="privacy-note photo-privacy">
-        <span class="privacy-dot" aria-hidden="true"></span>
-        <span data-i18n="privacy">照片只在你的裝置上處理，不會上傳。</span>
+        <span data-i18n="privacy">照片只會在您的裝置上處理與保存，不會上傳至任何伺服器。</span>
       </p>
     </section>
 
     <section id="editorScreen" class="screen editor-screen" hidden>
+      <input id="photoInput" type="file" accept="image/*" hidden>
       <div class="preview-card">
         <div id="canvasWrap" class="canvas-wrap">
           <canvas id="previewCanvas" width="2048" height="2048" aria-label="Avatar preview"></canvas>
-          <span id="gestureHint" class="gesture-hint" data-i18n="dragHint">拖曳移動 · 雙指縮放</span>
+          <button id="canvasUploadButton" class="canvas-upload-button" type="button" data-i18n="uploadPhoto">上傳照片</button>
+          <span id="gestureHint" class="gesture-hint" data-i18n="dragHint" hidden>拖曳移動 · 雙指縮放</span>
         </div>
       </div>
 
-      <div class="controls">
+      <div class="controls is-collapsed">
         <div class="zoom-row">
           <span class="zoom-label" data-i18n="zoom">縮放</span>
-          <input id="zoomSlider" type="range" min="0.2" max="3" step="0.01" value="1" aria-label="Zoom">
+          <input id="zoomSlider" type="range" min="0.2" max="3" step="0.01" value="1" aria-label="Zoom" disabled>
           <span id="zoomValue" class="zoom-value">100%</span>
         </div>
       </div>
@@ -104,9 +96,13 @@
           <span id="frameIndex" class="frame-index">1 / 6</span>
         </div>
         <div id="frameList" class="frame-list" aria-label="Avatar frames"></div>
+        <button id="blankSaveButton" class="blank-save-button" type="button">
+          <span data-i18n="blankSave">不使用照片？直接儲存留白版本</span>
+          <span aria-hidden="true">→</span>
+        </button>
         <div class="mode-actions">
-          <button id="saveButton" class="primary-button" type="button" data-i18n="save">儲存圖片</button>
-          <button id="restartButton" class="restart-button" type="button" data-i18n="restart">重新製作</button>
+          <button id="saveButton" class="primary-button" type="button" data-i18n="save" disabled>儲存圖片</button>
+          <button id="restartButton" class="restart-button" type="button" data-i18n="restart" hidden>重新製作</button>
         </div>
       </div>
     </section>
@@ -129,7 +125,7 @@
     <div class="sheet">
       <div class="sheet-handle" aria-hidden="true"></div>
       <h3 id="exportTitle" data-i18n="exportTitle">選擇圖片尺寸</h3>
-      <p class="sheet-copy" data-i18n="exportCopy">PNG 格式，適合保存與分享。</p>
+      <p id="exportCopy" class="sheet-copy" data-i18n="exportCopy">PNG 格式，適合保存與分享。</p>
       <div class="size-options">
         <button class="size-button" type="button" data-export-size="2048">
           <span>
@@ -158,6 +154,6 @@
     </div>
   </div>
 
-  <script src="app.js?v=20260804-7"></script>
+  <script src="app.js?v=20260920-7"></script>
 </body>
 </html>

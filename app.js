@@ -3,26 +3,27 @@
 
   const COPY = {
     zh: {
-      title: "頭像框小工具",
+      title: "敖尹應援頭像框",
+      titleLine1: "敖尹應援",
+      titleLine2: "頭像框",
       campaignBefore: "敖尹的加入，也是",
       gameTitle: "《戀與深空》",
       campaignAfter: "長期內容規劃中的一環。",
       campaignTeam: "製作組",
       campaignDate: "，2026.06.28",
-      introLine1: "將你的照片套上頭像框，",
-      introLine2: "換上新的大頭貼為敖尹應援吧！",
+      introLine1: "加上頭像框，用專屬於你的頭貼",
+      introLine2: "為敖尹應援吧！",
       home: "回首頁",
-      privacy: "照片只在你的裝置上處理，不會上傳。",
+      privacy: "照片只會在您的裝置上處理與保存，不會上傳至任何伺服器。",
       frameTitle: "選擇頭像框",
       dragHint: "拖曳移動 · 雙指縮放",
       zoom: "縮放",
       start: "開始製作",
       startLabel: "開始製作頭像框",
-      choosePhoto: "選擇照片",
+      uploadPhoto: "上傳照片",
       loadingPhoto: "讀取照片中…",
-      choosePhotoLabel: "從裝置選擇照片",
-      uploadHint: "支援 JPG、PNG 與手機相簿照片",
       save: "儲存圖片",
+      blankSave: "不使用照片？直接儲存留白版本",
       restart: "重新製作",
       createdBy: "本網站由",
       createdSuffix: "創建",
@@ -37,6 +38,7 @@
       frameLilyLoved: "鈴蘭 · #VALKOISLOVED",
       exportTitle: "選擇圖片尺寸",
       exportCopy: "PNG 格式，適合保存與分享。",
+      blankExportCopy: "深薄荷綠留白底圖，PNG 格式。",
       highQuality: "高畫質",
       smallFile: "較小檔案",
       cancel: "取消",
@@ -47,26 +49,27 @@
       frameLoading: "頭像框載入中，請稍候。"
     },
     en: {
-      title: "Avatar Frame Maker",
+      title: "Valko Support Avatar Frames",
+      titleLine1: "Valko Support",
+      titleLine2: "Avatar Frames",
       campaignBefore: "The development of Valko and his related content is part of the long-term content plan for",
       gameTitle: "Love and Deepspace",
       campaignAfter: ".",
       campaignTeam: "Development Team",
       campaignDate: ", June 28, 2026",
-      introLine1: "Frame your photo and update your profile.",
-      introLine2: "Show your support for Valko!",
+      introLine1: "Add a frame and show your support for Valko",
+      introLine2: "with a profile picture that’s uniquely yours!",
       home: "Home",
-      privacy: "Your photo stays on your device and is never uploaded.",
+      privacy: "Your photo is processed and saved only on your device. It is never uploaded to any server.",
       frameTitle: "Choose a frame",
       dragHint: "Drag to move · Pinch to zoom",
       zoom: "Zoom",
       start: "Start creating",
       startLabel: "Start making an avatar frame",
-      choosePhoto: "Choose a photo",
+      uploadPhoto: "Upload photo",
       loadingPhoto: "Loading photo…",
-      choosePhotoLabel: "Choose a photo from your device",
-      uploadHint: "JPG, PNG, or a photo from your library",
       save: "Save image",
+      blankSave: "No photo? Save a blank version",
       restart: "Make another",
       createdBy: "Created by",
       createdSuffix: "",
@@ -81,6 +84,7 @@
       frameLilyLoved: "Lily of the Valley · #VALKOISLOVED",
       exportTitle: "Choose image size",
       exportCopy: "Saved as PNG, ready to share.",
+      blankExportCopy: "A blank image with a deep mint background, saved as PNG.",
       highQuality: "High quality",
       smallFile: "Smaller file",
       cancel: "Cancel",
@@ -95,7 +99,11 @@
   const OUTPUT_SIZE = 2048;
   const MIN_ZOOM = 0.2;
   const MAX_ZOOM = 3;
+  const ZOOM_SNAP_VALUE = 1;
+  const ZOOM_SNAP_RADIUS = 0.06;
+  const ZOOM_FINE_TUNE_HOLD_MS = 450;
   const CANVAS_MINT = "#4f918d";
+  const EMPTY_CANVAS_MINT = "#3b6b68";
   const frames = [
     {
       id: "basic-bringvalkoback",
@@ -137,7 +145,7 @@
       id: "lily-bringvalkoback",
       nameKey: "frameLilyBring",
       type: "image",
-      src: "assets/frame-lily-bringvalkoback.png?v=20260804-1",
+      src: "assets/frame-lily-bringvalkoback.png?v=20260920-2",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -146,7 +154,7 @@
       id: "lily-valkoisloved",
       nameKey: "frameLilyLoved",
       type: "image",
-      src: "assets/frame-lily-valkoisloved.png?v=20260804-1",
+      src: "assets/frame-lily-valkoisloved.png?v=20260920-2",
       image: null,
       bounds: null,
       fallbackBounds: { x: 47, y: 35, width: 1953, height: 1978 }
@@ -164,38 +172,116 @@
     panY: 0,
     pointers: new Map(),
     dragStart: null,
-    pinchStart: null
+    pinchStart: null,
+    exportMode: "photo"
+  };
+
+  const zoomSnapInteraction = {
+    bypass: false,
+    holdTimer: null
   };
 
   const elements = {
     uploadScreen: document.querySelector("#uploadScreen"),
-    photoScreen: document.querySelector("#photoScreen"),
     editorScreen: document.querySelector("#editorScreen"),
     brandLabel: document.querySelector("#brandLabel"),
     homeButton: document.querySelector("#homeButton"),
     photoInput: document.querySelector("#photoInput"),
     uploadButton: document.querySelector("#uploadButton"),
-    choosePhotoButton: document.querySelector("#choosePhotoButton"),
+    canvasUploadButton: document.querySelector("#canvasUploadButton"),
     canvasWrap: document.querySelector("#canvasWrap"),
     canvas: document.querySelector("#previewCanvas"),
     gestureHint: document.querySelector("#gestureHint"),
+    controls: document.querySelector(".controls"),
     zoomSlider: document.querySelector("#zoomSlider"),
     zoomValue: document.querySelector("#zoomValue"),
     saveButton: document.querySelector("#saveButton"),
+    blankSaveButton: document.querySelector("#blankSaveButton"),
     restartButton: document.querySelector("#restartButton"),
     frameList: document.querySelector("#frameList"),
     frameName: document.querySelector("#frameName"),
     frameIndex: document.querySelector("#frameIndex"),
     exportSheet: document.querySelector("#exportSheet"),
+    exportCopy: document.querySelector("#exportCopy"),
     closeSheetButton: document.querySelector("#closeSheetButton"),
+    homeFrameStack: document.querySelector("#homeFrameStack"),
+    homeStackFront: document.querySelector("#homeStackFront"),
+    homeStackMiddle: document.querySelector("#homeStackMiddle"),
+    homeStackBack: document.querySelector("#homeStackBack"),
     toast: document.querySelector("#toast"),
     successOverlay: document.querySelector("#successOverlay")
   };
 
   const previewContext = elements.canvas.getContext("2d", { alpha: false });
+  let homeFrameOrder = [];
+  let homeFrameCursor = 0;
+  let homeFrameInterval = null;
+  let homeFrameTimeout = null;
 
   function text(key) {
     return COPY[state.language][key];
+  }
+
+  function updateExportCopy() {
+    elements.exportCopy.textContent = state.exportMode === "blank"
+      ? text("blankExportCopy")
+      : text("exportCopy");
+  }
+
+  function shuffledFrameIndexes() {
+    const indexes = frames.map((_, index) => index);
+    for (let index = indexes.length - 1; index > 0; index -= 1) {
+      const swapIndex = Math.floor(Math.random() * (index + 1));
+      [indexes[index], indexes[swapIndex]] = [indexes[swapIndex], indexes[index]];
+    }
+    return indexes;
+  }
+
+  function renderHomeFrameStack() {
+    if (!elements.homeFrameStack || homeFrameOrder.length === 0) return;
+    const frameAt = (offset) => frames[homeFrameOrder[(homeFrameCursor + offset) % frames.length]];
+    elements.homeStackFront.src = frameAt(0).src;
+    elements.homeStackMiddle.src = frameAt(1).src;
+    elements.homeStackBack.src = frameAt(2).src;
+  }
+
+  function advanceHomeFrameStack() {
+    if (!elements.homeFrameStack || elements.uploadScreen.hidden) return;
+    elements.homeFrameStack.classList.add("is-cycling");
+    window.clearTimeout(homeFrameTimeout);
+    homeFrameTimeout = window.setTimeout(() => {
+      homeFrameCursor += 1;
+      if (homeFrameCursor >= frames.length) {
+        const carriedFrames = homeFrameOrder.slice(0, 2);
+        const reshuffledFrames = shuffledFrameIndexes()
+          .filter((frameIndex) => !carriedFrames.includes(frameIndex));
+        homeFrameOrder = [...carriedFrames, ...reshuffledFrames];
+        homeFrameCursor = 0;
+      }
+      renderHomeFrameStack();
+      elements.homeFrameStack.classList.remove("is-cycling");
+    }, 520);
+  }
+
+  function startHomeFrameRotation() {
+    window.clearInterval(homeFrameInterval);
+    window.clearTimeout(homeFrameTimeout);
+    if (homeFrameOrder.length === 0) {
+      homeFrameOrder = shuffledFrameIndexes();
+      homeFrameCursor = 0;
+    }
+    renderHomeFrameStack();
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      homeFrameInterval = window.setInterval(advanceHomeFrameStack, 3000);
+    }
+  }
+
+  function stopHomeFrameRotation() {
+    window.clearInterval(homeFrameInterval);
+    window.clearTimeout(homeFrameTimeout);
+    homeFrameInterval = null;
+    homeFrameTimeout = null;
+    elements.homeFrameStack?.classList.remove("is-cycling");
   }
 
   function setLanguage(language) {
@@ -203,8 +289,8 @@
     localStorage.setItem("bringvalkoback-language", language);
     document.documentElement.lang = language === "zh" ? "zh-Hant" : "en";
     document.title = language === "zh"
-      ? "頭像框小工具｜BRING VALKO BACK"
-      : "Avatar Frame Maker | BRING VALKO BACK";
+      ? "敖尹應援頭像框"
+      : "Valko Support Avatar Frames";
 
     document.querySelectorAll("[data-i18n]").forEach((node) => {
       node.textContent = text(node.dataset.i18n);
@@ -217,11 +303,12 @@
     });
 
     elements.uploadButton.setAttribute("aria-label", text("startLabel"));
-    updatePhotoStepUI();
+    updateEditorState();
     elements.homeButton.setAttribute("aria-label", text("home"));
     elements.homeButton.setAttribute("title", text("home"));
     updateFrameMeta();
     renderFrameOptions();
+    updateExportCopy();
   }
 
   function showToast(message) {
@@ -360,15 +447,16 @@
   }
 
   function renderToCanvas(canvas, size, options = {}) {
-    const { clipPhotoToCircle = false } = options;
+    const { clipPhotoToCircle = false, forceBlank = false } = options;
+    const shouldDrawPhoto = Boolean(state.photo) && !forceBlank;
     canvas.width = size;
     canvas.height = size;
     const context = canvas.getContext("2d", { alpha: false });
     context.clearRect(0, 0, size, size);
-    context.fillStyle = CANVAS_MINT;
+    context.fillStyle = shouldDrawPhoto ? CANVAS_MINT : EMPTY_CANVAS_MINT;
     context.fillRect(0, 0, size, size);
 
-    if (state.photo) {
+    if (shouldDrawPhoto) {
       const metrics = getImageMetrics(size);
       context.save();
       if (clipPhotoToCircle) {
@@ -400,6 +488,7 @@
   }
 
   function resetTransform() {
+    endZoomInteraction();
     state.zoom = 1;
     state.panX = 0;
     state.panY = 0;
@@ -408,11 +497,35 @@
     renderPreview();
   }
 
+  function beginZoomInteraction() {
+    window.clearTimeout(zoomSnapInteraction.holdTimer);
+    zoomSnapInteraction.bypass = false;
+    zoomSnapInteraction.holdTimer = window.setTimeout(() => {
+      zoomSnapInteraction.bypass = true;
+    }, ZOOM_FINE_TUNE_HOLD_MS);
+  }
+
+  function endZoomInteraction() {
+    window.clearTimeout(zoomSnapInteraction.holdTimer);
+    zoomSnapInteraction.holdTimer = null;
+    zoomSnapInteraction.bypass = false;
+  }
+
+  function updateZoomFromSlider(rawZoom) {
+    const shouldSnap = !zoomSnapInteraction.bypass
+      && Math.abs(rawZoom - ZOOM_SNAP_VALUE) <= ZOOM_SNAP_RADIUS + 1e-9;
+    state.zoom = shouldSnap ? ZOOM_SNAP_VALUE : rawZoom;
+    elements.zoomSlider.value = String(state.zoom);
+    elements.zoomValue.textContent = `${Math.round(state.zoom * 100)}%`;
+    clampPan();
+    renderPreview();
+  }
+
   function loadPhoto(file) {
     if (!file) return;
     const loadToken = ++state.photoLoadToken;
     state.photoLoading = true;
-    updatePhotoStepUI();
+    updateEditorState();
     const url = URL.createObjectURL(file);
     const image = new Image();
     image.onload = () => {
@@ -425,28 +538,34 @@
       state.photo = image;
       state.photoLoading = false;
       state.frameIndex = 0;
-      updatePhotoStepUI();
+      updateEditorState();
       resetTransform();
-      elements.photoScreen.hidden = true;
-      elements.editorScreen.hidden = false;
       renderFrameOptions();
     };
     image.onerror = () => {
       URL.revokeObjectURL(url);
       if (loadToken !== state.photoLoadToken) return;
       state.photoLoading = false;
-      updatePhotoStepUI();
+      updateEditorState();
       showToast(text("invalidImage"));
     };
     image.src = url;
   }
 
-  function updatePhotoStepUI() {
-    elements.choosePhotoButton.textContent = state.photoLoading
+  function updateEditorState() {
+    const hasPhoto = Boolean(state.photo);
+    elements.canvasUploadButton.textContent = state.photoLoading
       ? text("loadingPhoto")
-      : text("choosePhoto");
-    elements.choosePhotoButton.disabled = state.photoLoading;
-    elements.choosePhotoButton.setAttribute("aria-label", text("choosePhotoLabel"));
+      : text("uploadPhoto");
+    elements.canvasUploadButton.disabled = state.photoLoading;
+    elements.canvasUploadButton.hidden = hasPhoto;
+    elements.gestureHint.hidden = !hasPhoto;
+    elements.zoomSlider.disabled = !hasPhoto;
+    elements.saveButton.disabled = !hasPhoto;
+    elements.blankSaveButton.hidden = hasPhoto;
+    elements.restartButton.hidden = !hasPhoto;
+    elements.canvasWrap.classList.toggle("is-empty", !hasPhoto);
+    elements.controls.classList.toggle("is-collapsed", !hasPhoto);
   }
 
   function goHome() {
@@ -462,22 +581,23 @@
     state.pinchStart = null;
     elements.photoInput.value = "";
     elements.editorScreen.hidden = true;
-    elements.photoScreen.hidden = true;
     elements.uploadScreen.hidden = false;
     elements.homeButton.hidden = true;
     elements.brandLabel.hidden = false;
     closeExportSheet();
     resetTransform();
-    updatePhotoStepUI();
+    updateEditorState();
+    startHomeFrameRotation();
   }
 
-  function showPhotoStep() {
+  function showMaker() {
+    stopHomeFrameRotation();
     elements.uploadScreen.hidden = true;
-    elements.photoScreen.hidden = false;
-    elements.editorScreen.hidden = true;
+    elements.editorScreen.hidden = false;
     elements.brandLabel.hidden = true;
     elements.homeButton.hidden = false;
-    updatePhotoStepUI();
+    updateEditorState();
+    renderFrameOptions();
   }
 
   function restartMaker() {
@@ -495,11 +615,10 @@
     closeExportSheet();
     resetTransform();
     elements.uploadScreen.hidden = true;
-    elements.editorScreen.hidden = true;
-    elements.photoScreen.hidden = false;
+    elements.editorScreen.hidden = false;
     elements.brandLabel.hidden = true;
     elements.homeButton.hidden = false;
-    updatePhotoStepUI();
+    updateEditorState();
     updateFrameMeta();
     renderFrameOptions();
   }
@@ -566,6 +685,7 @@
   }
 
   function onPointerDown(event) {
+    if (!state.photo) return;
     elements.canvasWrap.setPointerCapture?.(event.pointerId);
     state.pointers.set(event.pointerId, { x: event.clientX, y: event.clientY });
     elements.gestureHint.classList.add("is-faded");
@@ -627,11 +747,13 @@
     }
   }
 
-  function openExportSheet() {
+  function openExportSheet(mode = "photo") {
     if (frames[state.frameIndex].type === "image" && !frames[state.frameIndex].image) {
       showToast(text("frameLoading"));
       return;
     }
+    state.exportMode = mode;
+    updateExportCopy();
     elements.exportSheet.hidden = false;
   }
 
@@ -659,7 +781,10 @@
   }
 
   async function exportImage(size) {
-    const filename = `bringvalkoback-avatar-${frames[state.frameIndex].id}.png`;
+    const filenamePrefix = state.exportMode === "blank"
+      ? "bringvalkoback-blank"
+      : "bringvalkoback-avatar";
+    const filename = `${filenamePrefix}-${frames[state.frameIndex].id}.png`;
     const mobileDevice = isMobileDevice();
     let fileHandle = null;
 
@@ -681,7 +806,10 @@
     closeExportSheet();
     showToast(text("preparing"));
     const outputCanvas = document.createElement("canvas");
-    renderToCanvas(outputCanvas, size, { clipPhotoToCircle: true });
+    renderToCanvas(outputCanvas, size, {
+      clipPhotoToCircle: true,
+      forceBlank: state.exportMode === "blank"
+    });
     const blob = await new Promise((resolve) => outputCanvas.toBlob(resolve, "image/png"));
     if (!blob) return;
 
@@ -716,14 +844,15 @@
     button.addEventListener("click", () => setLanguage(button.dataset.lang));
   });
 
-  elements.uploadButton.addEventListener("click", showPhotoStep);
-  elements.choosePhotoButton.addEventListener("click", () => elements.photoInput.click());
+  elements.uploadButton.addEventListener("click", showMaker);
+  elements.canvasUploadButton.addEventListener("click", () => elements.photoInput.click());
   elements.homeButton.addEventListener("click", goHome);
   elements.photoInput.addEventListener("change", (event) => {
     loadPhoto(event.target.files?.[0]);
     event.target.value = "";
   });
-  elements.saveButton.addEventListener("click", openExportSheet);
+  elements.saveButton.addEventListener("click", () => openExportSheet("photo"));
+  elements.blankSaveButton.addEventListener("click", () => openExportSheet("blank"));
   elements.restartButton.addEventListener("click", restartMaker);
   elements.closeSheetButton.addEventListener("click", closeExportSheet);
   elements.exportSheet.addEventListener("click", (event) => {
@@ -734,11 +863,13 @@
   });
 
   elements.zoomSlider.addEventListener("input", (event) => {
-    state.zoom = Number(event.target.value);
-    elements.zoomValue.textContent = `${Math.round(state.zoom * 100)}%`;
-    clampPan();
-    renderPreview();
+    updateZoomFromSlider(Number(event.target.value));
   });
+  elements.zoomSlider.addEventListener("pointerdown", beginZoomInteraction);
+  elements.zoomSlider.addEventListener("pointerup", endZoomInteraction);
+  elements.zoomSlider.addEventListener("pointercancel", endZoomInteraction);
+  elements.zoomSlider.addEventListener("lostpointercapture", endZoomInteraction);
+  elements.zoomSlider.addEventListener("blur", endZoomInteraction);
 
   elements.canvasWrap.addEventListener("pointerdown", onPointerDown);
   elements.canvasWrap.addEventListener("pointermove", onPointerMove);
@@ -747,4 +878,5 @@
 
   setLanguage(state.language);
   loadFrames();
+  startHomeFrameRotation();
 })();
